@@ -15,10 +15,10 @@ $(document).ready(function () {
   var database = firebase.database();
 
   // SHOW CURRENT TIME
-  $("#current-time").text(moment().format('h:mm:ss a'));
-
-  // ATTACH ADDTRAIN FUNCTION TO SUBMIT BUTTON
-  $(".addInfoButton").on('click', addTrain);
+  var getTime = function () {
+    $("#current-time").html(moment().format('h:mm'));
+  }
+  setInterval(getTime, 1000)
 
   // FUNCTION TO STORE USER INPUT INTO DATABASE
   // --------------------------------
@@ -26,7 +26,7 @@ $(document).ready(function () {
     // get info from specific elements in form
     var trainName = $("#train-name").val().trim();
     var trainDestination = $("#destination").val().trim();
-    var trainStart = $("#train-start").val().trim();
+    var trainStart = $("#train-start").val();
     var trainFrequency = $("#frequency").val().trim();
 
     // create object to store data
@@ -47,33 +47,48 @@ $(document).ready(function () {
     // console.log(trainInfo.frequency);
   };
 
+  // ATTACH ADDTRAIN FUNCTION TO SUBMIT BUTTON
+  $(".addInfoButton").on('click', addTrain);
+
   // ADD USER INPUT TO HTML
   // ------------------------
   database.ref("trains").on("child_added", function (snapshot) {
     // console.log(snapshot);
     var a = snapshot.val();
-    // console.log(a);
+    console.log(a);
     //  make variables to hold the data that was just stored
     var trainName = a.name;
     var trainDestination = a.destination;
-    var trainStart = a.time;
+    var trainStart = a.start;
+    console.log("this is trainStart " + trainStart);
     var trainFrequency = a.frequency;
 
-    // calculate next train arrival
-    // current time minus when train starts running then divide by frequency = number of times train has run already
-    // number of times train has run, multiply frequency, add start time = previous arrival time
-    // previous arrival time plus frequency = next train arrival 
-
     // calculate minutes until next arrival
-    // next train arrival minus current time = minutes until arrival
+    // make sure trainStart input is calculated as happening previous to the current time
+    trainStartMoment = moment(trainStart, "HH:mm").subtract(1, "days");
+    console.log("train start moment " + trainStartMoment)
+    // time between current time and the first train start (current time minus train start)
+    var diffTime = moment().diff(moment(trainStartMoment), "minutes");
+    console.log("difference in time " + trainStartMoment);
+    // (current time minus train start) divide by the frequency
+    var timeApart = diffTime % trainFrequency;
+    console.log(": " + timeApart);
+
+    var minutesUntilTrain = trainFrequency - timeApart;
+    console.log("MINUTES UNTIL TRAIN: " + minutesUntilTrain);
+
+
+    // calculate the next arrival time
+    // add minutes until train to current time
+    var nextTrainTime = moment().add(minutesUntilTrain, "minutes");
 
     // create new table rows that display the data
     var tableRow = $("<tr>").append(
       $("<td>").text(trainName),
       $("<td>").text(trainDestination),
       $("<td>").text(trainFrequency),
-      $("<td>").text(''),
-      $("<td>").text(''),
+      $("<td>").text(moment(nextTrainTime).format("HH:mm")),
+      $("<td>").text(minutesUntilTrain),
     );
 
     $(".trainTable").append(tableRow);

@@ -9,7 +9,8 @@
   <link rel="stylesheet" type="text/css" href="assets/css/style.css">
   <script src="assets/javascript/app.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
 </head>
 
 <body>
@@ -32,13 +33,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Union Pacific</td>
-            <td>Denver</td>
-            <td>30</td>
-            <td>TBD</td>
-            <td>TBD</td>
-          </tr>
         </tbody>
       </table>
     </div>
@@ -57,12 +51,12 @@
           <input type="text" class="form-control" id="destination" placeholder="Enter Destination">
         </div>
         <div class="form-group">
-          <label for="train-start">First Train Leaves At (military time)</label>
-          <input type="text" class="form-control" id="train-start" placeholder="Enter Train Time">
+          <label for="train-start">First Train Leaves At:</label>
+          <input type="time" class="form-control" id="train-start">
         </div>
         <div class="form-group">
           <label for="frequency">Frequency (min)</label>
-          <input type="text" class="form-control" id="frequency" placeholder="Enter Frequency">
+          <input type="number" class="form-control" id="frequency" placeholder="Enter Frequency">
         </div>
         <buttom class="btn btn-primary addInfoButton">Submit</button>
       </form>
