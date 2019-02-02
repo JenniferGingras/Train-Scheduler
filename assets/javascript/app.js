@@ -16,7 +16,7 @@ $(document).ready(function () {
 
   // SHOW CURRENT TIME
   var getTime = function () {
-    $("#current-time").html(moment().format('h:mm'));
+    $("#current-time").html("Time is now " + moment().format('h:mm a'));
   }
   setInterval(getTime, 1000)
 
@@ -40,11 +40,13 @@ $(document).ready(function () {
     // put input into database
     database.ref("trains").push(trainInfo);
 
-    // test with console log
-    // console.log(trainInfo.name);
-    // console.log(trainInfo.destination);
-    // console.log(trainInfo.start);
-    // console.log(trainInfo.frequency);
+    // clear the form
+    $(".input-field").empty();
+    // $("#train-name").val("");
+    // $("#destination").val("");
+    // $("#train-start").val("");
+    // $("#frequency").val("")
+
   };
 
   // ATTACH ADDTRAIN FUNCTION TO SUBMIT BUTTON
@@ -63,34 +65,37 @@ $(document).ready(function () {
     console.log("this is trainStart " + trainStart);
     var trainFrequency = a.frequency;
 
+
     // calculate minutes until next arrival
-    // make sure trainStart input is calculated as happening previous to the current time
+    // if the user inputs a start time later than the current time it screws things up, this doesn't fix that error, but it returns a calculation and I'm using it for now
     trainStartMoment = moment(trainStart, "HH:mm").subtract(1, "days");
     console.log("train start moment " + trainStartMoment)
     // time between current time and the first train start (current time minus train start)
     var diffTime = moment().diff(moment(trainStartMoment), "minutes");
     console.log("difference in time " + trainStartMoment);
     // (current time minus train start) divide by the frequency
-    var timeApart = diffTime % trainFrequency;
-    console.log(": " + timeApart);
+    var minutesApart = diffTime % trainFrequency;
+    console.log(": " + minutesApart);
 
-    var minutesUntilTrain = trainFrequency - timeApart;
-    console.log("MINUTES UNTIL TRAIN: " + minutesUntilTrain);
+    var minutesAway = trainFrequency - minutesApart;
+    console.log("minutes until train: " + minutesAway);
 
 
     // calculate the next arrival time
     // add minutes until train to current time
-    var nextTrainTime = moment().add(minutesUntilTrain, "minutes");
+    var nextTrain = moment().add(minutesAway, "minutes");
 
     // create new table rows that display the data
     var tableRow = $("<tr>").append(
       $("<td>").text(trainName),
       $("<td>").text(trainDestination),
       $("<td>").text(trainFrequency),
-      $("<td>").text(moment(nextTrainTime).format("HH:mm")),
-      $("<td>").text(minutesUntilTrain),
+      $("<td>").text(moment(nextTrain).format("LT")),
+      $("<td>").text(minutesAway),
     );
 
     $(".trainTable").append(tableRow);
   });
+
+
 })
