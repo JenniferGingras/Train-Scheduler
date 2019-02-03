@@ -20,6 +20,7 @@ $(document).ready(function () {
   }
   setInterval(getTime, 1000)
 
+
   // FUNCTION TO STORE USER INPUT INTO DATABASE
   // --------------------------------
   var addTrain = function () {
@@ -41,16 +42,24 @@ $(document).ready(function () {
     database.ref("trains").push(trainInfo);
 
     // clear the form
-    $(".input-field").empty();
-    // $("#train-name").val("");
-    // $("#destination").val("");
-    // $("#train-start").val("");
-    // $("#frequency").val("")
+    $("#train-name").val("");
+    $("#destination").val("");
+    $("#train-start").val("");
+    $("#frequency").val("");
+  };
 
+  // only take valid input
+  var validateInput = function () {
+    if ($("input").val() === "") {
+      return false;
+    } else {
+      addTrain();
+    };
   };
 
   // ATTACH ADDTRAIN FUNCTION TO SUBMIT BUTTON
-  $(".addInfoButton").on('click', addTrain);
+  $(".addInfoButton").on('click', validateInput);
+
 
   // ADD USER INPUT TO HTML
   // ------------------------
@@ -68,8 +77,8 @@ $(document).ready(function () {
 
     // calculate minutes until next arrival
     // if the user inputs a start time later than the current time it screws things up, this doesn't fix that error, but it returns a calculation and I'm using it for now
-    trainStartMoment = moment(trainStart, "HH:mm").subtract(1, "days");
-    console.log("train start moment " + trainStartMoment)
+    trainStartMoment = moment(trainStart, "HH:mm").subtract(1, "years");
+    console.log("train start moment " + trainStartMoment);
     // time between current time and the first train start (current time minus train start)
     var diffTime = moment().diff(moment(trainStartMoment), "minutes");
     console.log("difference in time " + trainStartMoment);
